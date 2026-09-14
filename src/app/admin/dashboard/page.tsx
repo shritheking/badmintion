@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { QrCode, Search, LogOut, Download, CheckCircle2, XCircle } from "lucide-react";
+import { QrCode, Search, LogOut, Download, CheckCircle2, XCircle, Trash2, Eye, CheckSquare, X } from "lucide-react";
 import * as XLSX from "xlsx";
 
 export default function AdminDashboard() {
@@ -43,6 +43,42 @@ export default function AdminDashboard() {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push("/admin/login");
+  };
+
+  const [selectedReg, setSelectedReg] = useState<any>(null);
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this registration? This cannot be undone.")) return;
+    
+    try {
+      const res = await fetch(`/api/admin/registrations/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        setRegistrations(prev => prev.filter(r => r.registration_id !== id));
+      } else {
+        const err = await res.json();
+        alert(`Delete failed: ${err.error}`);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete registration");
+    }
+  };
+
+  const handleManualCheckIn = async (id: string) => {
+    if (!confirm("Manually check in this player?")) return;
+    
+    try {
+      const res = await fetch(`/api/admin/registrations/${id}/checkin`, { method: 'POST' });
+      if (res.ok) {
+        fetchRegistrations(); // Refresh data to get the new check-in
+      } else {
+        const err = await res.json();
+        alert(`Check-in failed: ${err.error}`);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Failed to check in player");
+    }
   };
 
   const exportToExcel = () => {
@@ -246,6 +282,20 @@ export default function AdminDashboard() {
                           )}
                         </div>
                       )}
+                      
+                      <div className="flex items-center gap-2 pt-2 border-t mt-2">
+                        <button onClick={() => setSelectedReg(reg)} className="flex-1 py-1.5 flex justify-center items-center gap-1 text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-md">
+                          <Eye className="h-3 w-3" /> View
+                        </button>
+                        {activeTab === 'checkins' && !isCheckedIn && (
+                          <button onClick={() => handleManualCheckIn(reg.registration_id)} className="flex-1 py-1.5 flex justify-center items-center gap-1 text-xs font-semibold text-green-600 bg-green-50 hover:bg-green-100 rounded-md">
+                            <CheckSquare className="h-3 w-3" /> Check-in
+                          </button>
+                        )}
+                        <button onClick={() => handleDelete(reg.registration_id)} className="flex-1 py-1.5 flex justify-center items-center gap-1 text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 rounded-md">
+                          <Trash2 className="h-3 w-3" /> Delete
+                        </button>
+                      </div>
                     </div>
                   );
                 })}
@@ -271,6 +321,7 @@ export default function AdminDashboard() {
                           <th className="px-6 py-4">Time</th>
                         </>
                       )}
+                      <th className="px-6 py-4">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -316,6 +367,21 @@ export default function AdminDashboard() {
                               </td>
                             </>
                           )}
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-2">
+                              <button onClick={() => setSelectedReg(reg)} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-md" title="View Details">
+                                <Eye className="h-4 w-4" />
+                              </button>
+                              {activeTab === 'checkins' && !isCheckedIn && (
+                                <button onClick={() => handleManualCheckIn(reg.registration_id)} className="p-1.5 text-green-600 hover:bg-green-50 rounded-md" title="Manual Check-in">
+                                  <CheckSquare className="h-4 w-4" />
+                                </button>
+                              )}
+                              <button onClick={() => handleDelete(reg.registration_id)} className="p-1.5 text-red-600 hover:bg-red-50 rounded-md" title="Delete">
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </td>
                         </tr>
                       )
                     })}
@@ -326,6 +392,54 @@ export default function AdminDashboard() {
           )}
         </div>
       </main>
+
+      {/* Player Details Modal */}
+      {selectedReg && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl w-full max-w-lg shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="flex justify-between items-center p-4 border-b bg-slate-50">
+              <h2 className="text-lg font-bold">Player Details</h2>
+              <button onClick={() => setSelectedReg(null)} className="p-1 hover:bg-slate-200 rounded-md text-slate-500">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto space-y-6">
+              <div>
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Primary Player</h3>
+                <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
+                  <div><span className="text-slate-500 block">Name:</span> <span className="font-semibold">{selectedReg.full_name}</span></div>
+                  <div><span className="text-slate-500 block">Reg ID:</span> <span className="font-mono">{selectedReg.registration_id}</span></div>
+                  <div><span className="text-slate-500 block">Mobile:</span> {selectedReg.mobile}</div>
+                  <div><span className="text-slate-500 block">Email:</span> {selectedReg.email}</div>
+                  <div><span className="text-slate-500 block">DOB:</span> {new Date(selectedReg.date_of_birth).toLocaleDateString()}</div>
+                  <div><span className="text-slate-500 block">City:</span> {selectedReg.city}</div>
+                </div>
+              </div>
+              
+              <div className="border-t pt-4">
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Doubles Partner</h3>
+                <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
+                  <div><span className="text-slate-500 block">Name:</span> <span className="font-semibold">{selectedReg.partner_name || 'N/A'}</span></div>
+                  <div><span className="text-slate-500 block">Mobile:</span> {selectedReg.partner_mobile || 'N/A'}</div>
+                </div>
+              </div>
+
+              <div className="border-t pt-4">
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Tournament Info</h3>
+                <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
+                  <div><span className="text-slate-500 block">Category:</span> {selectedReg.category}</div>
+                  <div><span className="text-slate-500 block">Club:</span> {selectedReg.club_or_organization || 'N/A'}</div>
+                  <div><span className="text-slate-500 block">Payment:</span> {selectedReg.payment_status} (₹{selectedReg.amount})</div>
+                  <div><span className="text-slate-500 block">Razorpay ID:</span> <span className="font-mono text-xs">{selectedReg.razorpay_order_id || 'N/A'}</span></div>
+                </div>
+              </div>
+            </div>
+            <div className="p-4 border-t bg-slate-50 flex justify-end">
+              <button onClick={() => setSelectedReg(null)} className="px-4 py-2 bg-slate-900 text-white rounded-md text-sm font-medium hover:bg-slate-800">Close</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
