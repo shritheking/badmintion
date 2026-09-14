@@ -134,7 +134,7 @@ export default function RegisterPage() {
       paymentObject.open();
 
     } catch (err: any) {
-      setError(err.message || "An unexpected error occurred");
+      setError(`[FRONTEND] ${err.message || "An unexpected error occurred"}`);
       setLoading(false);
     }
   };
