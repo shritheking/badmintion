@@ -112,7 +112,6 @@ export default function AdminScanner() {
         deviceId,
         {
           fps: 10,
-          qrbox: { width: 250, height: 250 },
           aspectRatio: 1.0,
           disableFlip: false,
         },
@@ -182,10 +181,11 @@ export default function AdminScanner() {
         <h1 className="font-bold text-lg tracking-wide">QR Scanner</h1>
       </header>
 
-      <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 w-full max-w-lg mx-auto">
-        <div className="w-full bg-slate-900 rounded-[32px] overflow-hidden shadow-2xl border border-slate-800 relative flex flex-col aspect-[3/4] sm:aspect-auto sm:min-h-[600px]">
+      <main className="flex-1 flex flex-col items-center justify-start p-4 sm:p-6 w-full max-w-lg mx-auto gap-4">
+        
+        <div className="w-full bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-slate-800 relative flex flex-col aspect-square sm:aspect-auto sm:min-h-[450px]">
           
-          {/* CAMERA VIEWPORT - Reserves space immediately */}
+          {/* CAMERA VIEWPORT */}
           <div className="flex-1 relative bg-black flex flex-col w-full h-full">
             
             {/* The actual video container */}
@@ -233,19 +233,16 @@ export default function AdminScanner() {
             {/* Scanning Overlay UI (Target Box) */}
             {cameraStatus === "ready" && !scanResult && (
               <div className="absolute inset-0 z-10 pointer-events-none">
-                {/* Dark overlay with transparent center cut-out */}
-                <div className="absolute inset-0 bg-black/40" style={{ clipPath: "polygon(0% 0%, 0% 100%, 100% 100%, 100% 0%, 0% 0%, 15% 25%, 85% 25%, 85% 75%, 15% 75%, 15% 25%)" }}></div>
-                
                 {/* Center target box */}
-                <div className="absolute top-1/4 left-[15%] right-[15%] bottom-1/4 border-2 border-white/20 rounded-2xl flex items-center justify-center">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[260px] h-[260px] flex items-center justify-center">
                   {/* Four corner brackets */}
-                  <div className="absolute -top-1 -left-1 w-8 h-8 border-t-4 border-l-4 border-primary rounded-tl-2xl"></div>
-                  <div className="absolute -top-1 -right-1 w-8 h-8 border-t-4 border-r-4 border-primary rounded-tr-2xl"></div>
-                  <div className="absolute -bottom-1 -left-1 w-8 h-8 border-b-4 border-l-4 border-primary rounded-bl-2xl"></div>
-                  <div className="absolute -bottom-1 -right-1 w-8 h-8 border-b-4 border-r-4 border-primary rounded-br-2xl"></div>
+                  <div className="absolute -top-1 -left-1 w-6 h-6 border-t-[4px] border-l-[4px] border-primary rounded-tl-xl shadow-[-2px_-2px_8px_rgba(59,130,246,0.3)]"></div>
+                  <div className="absolute -top-1 -right-1 w-6 h-6 border-t-[4px] border-r-[4px] border-primary rounded-tr-xl shadow-[2px_-2px_8px_rgba(59,130,246,0.3)]"></div>
+                  <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-[4px] border-l-[4px] border-primary rounded-bl-xl shadow-[-2px_2px_8px_rgba(59,130,246,0.3)]"></div>
+                  <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-[4px] border-r-[4px] border-primary rounded-br-xl shadow-[2px_2px_8px_rgba(59,130,246,0.3)]"></div>
                   
                   {/* Animated scanning line */}
-                  <div className="w-full h-0.5 bg-primary/80 absolute shadow-[0_0_8px_2px_rgba(59,130,246,0.5)] animate-[scan_2s_ease-in-out_infinite]" style={{ top: '50%' }}>
+                  <div className="w-[90%] h-[2px] bg-primary absolute shadow-[0_0_12px_2px_rgba(59,130,246,0.8)] animate-[scan_2s_ease-in-out_infinite]" style={{ top: '50%' }}>
                     <style jsx>{`
                       @keyframes scan {
                         0% { top: 5%; opacity: 0; }
@@ -256,27 +253,15 @@ export default function AdminScanner() {
                     `}</style>
                   </div>
                 </div>
-
-                {/* Status Text overlay */}
-                <div className="absolute bottom-8 left-0 right-0 text-center space-y-1">
-                  <div className="inline-block px-4 py-1.5 rounded-full bg-black/60 backdrop-blur-md text-white font-medium text-sm">
-                    {loadingResult ? (
-                      <span className="flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Verifying pass...</span>
-                    ) : (
-                      "Ready to scan"
-                    )}
-                  </div>
-                  <p className="text-xs text-white/70">Point the camera at the player's QR pass</p>
-                </div>
               </div>
             )}
             
             {/* Camera Controls (Flip Camera) */}
             {cameraStatus === "ready" && devices.length > 1 && !scanResult && (
-              <div className="absolute top-4 right-4 z-20">
+              <div className="absolute top-4 right-4 z-20 pointer-events-auto">
                 <button 
                   onClick={flipCamera}
-                  className="h-10 w-10 bg-black/50 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-black/70 transition"
+                  className="h-11 w-11 bg-black/60 backdrop-blur-md rounded-full flex items-center justify-center text-white border border-white/10 hover:bg-black/80 transition"
                   title="Flip Camera"
                 >
                   <RefreshCcw className="h-5 w-5" />
@@ -365,6 +350,20 @@ export default function AdminScanner() {
             )}
           </div>
         </div>
+
+        {/* Status Text overlay BELOW camera */}
+        {cameraStatus === "ready" && !scanResult && (
+          <div className="text-center space-y-2 mt-2 w-full animate-in fade-in duration-500">
+            <h2 className="text-xl font-bold flex items-center justify-center gap-2">
+              {loadingResult ? (
+                <><Loader2 className="h-5 w-5 animate-spin text-primary" /> Verifying pass...</>
+              ) : (
+                <><span className="h-2.5 w-2.5 bg-green-500 rounded-full animate-pulse"></span> Ready to scan</>
+              )}
+            </h2>
+            <p className="text-sm text-slate-400">Point the camera at the player's QR pass</p>
+          </div>
+        )}
       </main>
     </div>
   );
