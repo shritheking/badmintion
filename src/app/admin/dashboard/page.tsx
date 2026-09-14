@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { QrCode, Search, LogOut, Download, CheckCircle2, XCircle, Trash2, Eye, CheckSquare, X } from "lucide-react";
+import { QrCode, Search, LogOut, Download, CheckCircle2, XCircle, Trash2, Eye, CheckSquare, X, PlusCircle } from "lucide-react";
 import * as XLSX from "xlsx";
 
 export default function AdminDashboard() {
@@ -46,6 +46,37 @@ export default function AdminDashboard() {
   };
 
   const [selectedReg, setSelectedReg] = useState<any>(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
+
+  const handleAddSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsAdding(true);
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+      const res = await fetch("/api/admin/registrations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const json = await res.json();
+      if (res.ok) {
+        setShowAddModal(false);
+        fetchRegistrations();
+        alert("Player added successfully!");
+      } else {
+        alert(json.error || "Failed to add player");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong");
+    } finally {
+      setIsAdding(false);
+    }
+  };
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this registration? This cannot be undone.")) return;
@@ -204,12 +235,20 @@ export default function AdminDashboard() {
               />
             </div>
           </div>
-          <button 
-            onClick={exportToExcel}
-            className="w-full md:w-auto flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition-colors"
-          >
-            <Download className="h-4 w-4" /> Export Excel
-          </button>
+          <div className="flex flex-col sm:flex-row w-full md:w-auto gap-3">
+            <button 
+              onClick={() => setShowAddModal(true)}
+              className="w-full md:w-auto flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
+            >
+              <PlusCircle className="h-4 w-4" /> Add Player
+            </button>
+            <button 
+              onClick={exportToExcel}
+              className="w-full md:w-auto flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition-colors"
+            >
+              <Download className="h-4 w-4" /> Export
+            </button>
+          </div>
         </div>
 
         {/* Tabs */}
@@ -437,6 +476,77 @@ export default function AdminDashboard() {
             <div className="p-4 border-t bg-slate-50 flex justify-end">
               <button onClick={() => setSelectedReg(null)} className="px-4 py-2 bg-slate-900 text-white rounded-md text-sm font-medium hover:bg-slate-800">Close</button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Player Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl w-full max-w-lg shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="flex justify-between items-center p-4 border-b bg-slate-50">
+              <h2 className="text-lg font-bold">Add Manual Registration</h2>
+              <button onClick={() => setShowAddModal(false)} className="p-1 hover:bg-slate-200 rounded-md text-slate-500">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <form onSubmit={handleAddSubmit} className="overflow-y-auto flex-1">
+              <div className="p-6 space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-600">Full Name *</label>
+                    <input required name="full_name" className="w-full border rounded p-2 text-sm" />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-600">Mobile *</label>
+                    <input required type="tel" pattern="[0-9]{10}" name="mobile" className="w-full border rounded p-2 text-sm" placeholder="10 digits" />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-600">Email *</label>
+                    <input required type="email" name="email" className="w-full border rounded p-2 text-sm" />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-600">DOB *</label>
+                    <input required type="date" name="date_of_birth" className="w-full border rounded p-2 text-sm" />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-600">City *</label>
+                    <input required name="city" className="w-full border rounded p-2 text-sm" />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-600">Club (Optional)</label>
+                    <input name="club_or_organization" className="w-full border rounded p-2 text-sm" />
+                  </div>
+                </div>
+
+                <div className="border-t pt-4">
+                  <h3 className="text-xs font-bold text-slate-400 mb-2">PARTNER DETAILS</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-slate-600">Partner Name *</label>
+                      <input required name="partner_name" className="w-full border rounded p-2 text-sm" />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-slate-600">Partner Mobile *</label>
+                      <input required type="tel" pattern="[0-9]{10}" name="partner_mobile" className="w-full border rounded p-2 text-sm" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border-t pt-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-600">Amount Paid (Offline Cash) *</label>
+                    <input required type="number" name="amount" defaultValue={800} className="w-full border rounded p-2 text-sm font-bold" />
+                  </div>
+                </div>
+              </div>
+              <div className="p-4 border-t bg-slate-50 flex justify-end gap-2 mt-auto">
+                <button type="button" onClick={() => setShowAddModal(false)} className="px-4 py-2 border rounded-md text-sm font-medium hover:bg-slate-100">Cancel</button>
+                <button type="submit" disabled={isAdding} className="px-4 py-2 bg-primary text-white rounded-md text-sm font-medium hover:bg-primary/90 disabled:opacity-50">
+                  {isAdding ? "Adding..." : "Add Registration"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
