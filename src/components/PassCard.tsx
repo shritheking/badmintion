@@ -89,9 +89,15 @@ export default function PassCard({ registration }: { registration: any }) {
             <p className="text-sm font-semibold text-primary">{registration.category}</p>
           </div>
           
-          <div className="flex justify-center gap-4 text-xs font-semibold text-slate-500 mb-3 mt-1">
-            <span className="flex items-center"><CalendarDays className="h-3 w-3 mr-1" /> Sept 20th</span>
-            <span className="flex items-center"><MapPin className="h-3 w-3 mr-1" /> Vattalagundu Venue</span>
+          <div style={{ textAlign: "center", fontSize: "12px", fontWeight: "600", color: "#64748b", marginBottom: "12px", marginTop: "4px" }}>
+            <span style={{ display: "inline-block", marginRight: "16px" }}>
+              <CalendarDays style={{ display: "inline-block", verticalAlign: "middle", width: "12px", height: "12px", marginRight: "4px" }} />
+              <span style={{ display: "inline-block", verticalAlign: "middle" }}>Sept 20th</span>
+            </span>
+            <span style={{ display: "inline-block" }}>
+              <MapPin style={{ display: "inline-block", verticalAlign: "middle", width: "12px", height: "12px", marginRight: "4px" }} />
+              <span style={{ display: "inline-block", verticalAlign: "middle" }}>Vattalagundu Venue</span>
+            </span>
           </div>
           
           <div className="inline-block bg-slate-100 rounded-md px-3 py-1 font-mono text-xs font-bold text-slate-600 mb-3 border border-slate-200">
@@ -110,18 +116,20 @@ export default function PassCard({ registration }: { registration: any }) {
         
         {/* Status Area */}
         <div className="bg-slate-50 border-t border-dashed border-slate-300 p-4">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-semibold text-slate-500">Payment</span>
-              <span className="flex items-center text-green-600 font-bold">
-                <CheckCircle2 className="h-3 w-3 mr-1" /> VERIFIED
-              </span>
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "12px" }}>
+              <span style={{ fontWeight: "600", color: "#64748b" }}>Payment</span>
+              <div style={{ textAlign: "right", color: "#16a34a", fontWeight: "bold" }}>
+                <CheckCircle2 style={{ display: "inline-block", verticalAlign: "middle", width: "12px", height: "12px", marginRight: "4px" }} />
+                <span style={{ display: "inline-block", verticalAlign: "middle" }}>VERIFIED</span>
+              </div>
             </div>
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-semibold text-slate-500">Registration</span>
-              <span className="flex items-center text-green-600 font-bold">
-                <CheckCircle2 className="h-3 w-3 mr-1" /> CONFIRMED
-              </span>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "12px" }}>
+              <span style={{ fontWeight: "600", color: "#64748b" }}>Registration</span>
+              <div style={{ textAlign: "right", color: "#16a34a", fontWeight: "bold" }}>
+                <CheckCircle2 style={{ display: "inline-block", verticalAlign: "middle", width: "12px", height: "12px", marginRight: "4px" }} />
+                <span style={{ display: "inline-block", verticalAlign: "middle" }}>CONFIRMED</span>
+              </div>
             </div>
           </div>
         </div>
