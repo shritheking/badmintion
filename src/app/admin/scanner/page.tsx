@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { Html5QrcodeScanner } from "html5-qrcode";
+import { Html5Qrcode } from "html5-qrcode";
 import { ArrowLeft, CheckCircle2, XCircle, AlertTriangle, Loader2 } from "lucide-react";
 import Link from "next/link";
 
@@ -14,7 +14,7 @@ export default function AdminScanner() {
   const [loading, setLoading] = useState(false);
   const [scannerActive, setScannerActive] = useState(true);
 
-  const scannerRef = useRef<Html5QrcodeScanner | null>(null);
+  const scannerRef = useRef<Html5Qrcode | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -33,31 +33,37 @@ export default function AdminScanner() {
     if (scannerRef.current) return;
 
     // Initialize scanner
-    const scanner = new Html5QrcodeScanner(
-      "qr-reader",
-      { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 },
-      false
-    );
-    
-    scannerRef.current = scanner;
+    const html5QrCode = new Html5Qrcode("qr-reader");
+    scannerRef.current = html5QrCode;
 
-    scanner.render(
+    html5QrCode.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 },
       async (decodedText) => {
         // Stop scanning after successful read to prevent rapid-fire requests
         setScannerActive(false);
-        scanner.clear();
-        scannerRef.current = null;
+        try {
+          await html5QrCode.stop();
+          html5QrCode.clear();
+          scannerRef.current = null;
+        } catch (err) {
+          console.error("Failed to stop scanner", err);
+        }
         await processScan(decodedText);
       },
       (errorMessage) => {
         // ignore continuous scan errors
       }
-    );
+    ).catch((err) => {
+      console.error("Error starting scanner:", err);
+    });
 
     return () => {
       if (scannerRef.current) {
-        scannerRef.current.clear().catch(console.error);
-        scannerRef.current = null;
+        scannerRef.current.stop().then(() => {
+          scannerRef.current?.clear();
+          scannerRef.current = null;
+        }).catch(console.error);
       }
     };
   }, [session, scannerActive]);
