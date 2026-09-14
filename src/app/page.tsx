@@ -94,12 +94,11 @@ export default function Home() {
               <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Categories</h2>
               <p className="mt-4 text-muted-foreground">Choose your category and show your skills on the court.</p>
             </div>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="flex justify-center">
               {[
-                { name: "Men's Singles", fee: "₹500", type: "Singles" },
                 { name: "Men's Doubles", fee: "₹800", type: "Doubles" },
               ].map((cat, i) => (
-                <div key={i} className="group relative overflow-hidden rounded-xl border bg-white p-6 shadow-sm transition-all hover:shadow-md">
+                <div key={i} className="group w-full max-w-sm relative overflow-hidden rounded-xl border bg-white p-6 shadow-sm transition-all hover:shadow-md">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-xl font-bold">{cat.name}</h3>
                     <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
