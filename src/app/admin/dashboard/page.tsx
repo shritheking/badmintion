@@ -49,6 +49,16 @@ export default function AdminDashboard() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
 
+  const [dialog, setDialog] = useState<{isOpen: boolean, title: string, message: string, type: 'alert'|'confirm', onConfirm?: () => void}>({isOpen: false, title: "", message: "", type: "alert"});
+
+  const showAlert = (title: string, message: string) => {
+    setDialog({ isOpen: true, title, message, type: 'alert' });
+  };
+
+  const showConfirm = (title: string, message: string, onConfirm: () => void) => {
+    setDialog({ isOpen: true, title, message, type: 'confirm', onConfirm });
+  };
+
   const handleAddSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsAdding(true);
@@ -66,50 +76,50 @@ export default function AdminDashboard() {
       if (res.ok) {
         setShowAddModal(false);
         fetchRegistrations();
-        alert("Player added successfully!");
+        showAlert("Success", "Player added successfully!");
       } else {
-        alert(json.error || "Failed to add player");
+        showAlert("Error", json.error || "Failed to add player");
       }
     } catch (err) {
       console.error(err);
-      alert("Something went wrong");
+      showAlert("Error", "Something went wrong");
     } finally {
       setIsAdding(false);
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this registration? This cannot be undone.")) return;
-    
-    try {
-      const res = await fetch(`/api/admin/registrations/${id}`, { method: 'DELETE' });
-      if (res.ok) {
-        setRegistrations(prev => prev.filter(r => r.registration_id !== id));
-      } else {
-        const err = await res.json();
-        alert(`Delete failed: ${err.error}`);
+  const handleDelete = (id: string) => {
+    showConfirm("Delete Registration", "Are you sure you want to delete this registration? This cannot be undone.", async () => {
+      try {
+        const res = await fetch(`/api/admin/registrations/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          setRegistrations(prev => prev.filter(r => r.registration_id !== id));
+        } else {
+          const err = await res.json();
+          showAlert("Delete Failed", err.error);
+        }
+      } catch (err) {
+        console.error(err);
+        showAlert("Error", "Failed to delete registration");
       }
-    } catch (err) {
-      console.error(err);
-      alert("Failed to delete registration");
-    }
+    });
   };
 
-  const handleManualCheckIn = async (id: string) => {
-    if (!confirm("Manually check in this player?")) return;
-    
-    try {
-      const res = await fetch(`/api/admin/registrations/${id}/checkin`, { method: 'POST' });
-      if (res.ok) {
-        fetchRegistrations(); // Refresh data to get the new check-in
-      } else {
-        const err = await res.json();
-        alert(`Check-in failed: ${err.error}`);
+  const handleManualCheckIn = (id: string) => {
+    showConfirm("Manual Check-in", "Manually check in this player?", async () => {
+      try {
+        const res = await fetch(`/api/admin/registrations/${id}/checkin`, { method: 'POST' });
+        if (res.ok) {
+          fetchRegistrations(); // Refresh data to get the new check-in
+        } else {
+          const err = await res.json();
+          showAlert("Check-in Failed", err.error);
+        }
+      } catch (err) {
+        console.error(err);
+        showAlert("Error", "Failed to check in player");
       }
-    } catch (err) {
-      console.error(err);
-      alert("Failed to check in player");
-    }
+    });
   };
 
   const exportToExcel = () => {
@@ -547,6 +557,36 @@ export default function AdminDashboard() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Custom Dialog */}
+      {dialog.isOpen && (
+        <div className="fixed inset-0 z-[100] bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden flex flex-col">
+            <div className="p-6 space-y-3">
+              <h2 className="text-lg font-bold text-slate-900">{dialog.title}</h2>
+              <p className="text-sm text-slate-500">{dialog.message}</p>
+            </div>
+            <div className="p-4 border-t bg-slate-50 flex justify-end gap-2">
+              {dialog.type === 'confirm' && (
+                <button onClick={() => setDialog({ ...dialog, isOpen: false })} className="px-4 py-2 border rounded-md text-sm font-medium hover:bg-slate-100">
+                  Cancel
+                </button>
+              )}
+              <button 
+                onClick={() => {
+                  if (dialog.type === 'confirm' && dialog.onConfirm) {
+                    dialog.onConfirm();
+                  }
+                  setDialog({ ...dialog, isOpen: false });
+                }} 
+                className={`px-4 py-2 text-white rounded-md text-sm font-medium ${dialog.title.toLowerCase().includes('delete') ? 'bg-red-600 hover:bg-red-700' : 'bg-primary hover:bg-primary/90'}`}
+              >
+                {dialog.type === 'confirm' ? 'Confirm' : 'OK'}
+              </button>
+            </div>
           </div>
         </div>
       )}
