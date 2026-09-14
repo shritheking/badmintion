@@ -83,16 +83,17 @@ function RegisterForm() {
       const res = await loadRazorpay();
       if (!res) throw new Error("Razorpay SDK failed to load. Are you online?");
 
-      // 3. Open Razorpay Checkout
+      const baseUrl = window.location.origin || (window.location.protocol + "//" + window.location.host);
+      
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: orderData.amount,
         currency: "INR",
         name: "SMASHPRO",
         description: `Registration`,
-        image: window.location.origin + "/logo.png",
+        image: baseUrl + "/logo.png",
         order_id: orderData.orderId,
-        callback_url: window.location.origin + "/api/payments/callback",
+        callback_url: baseUrl + "/api/payments/callback",
         redirect: true,
         prefill: {
           name: formData.fullName,
