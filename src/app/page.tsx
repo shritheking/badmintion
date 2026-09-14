@@ -40,7 +40,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-4 items-center text-sm md:text-base text-gray-200">
               <div className="flex items-center gap-2">
                 <CalendarDays className="h-5 w-5 text-primary" />
-                <span>Coming Soon</span>
+                <span>Sunday, 20/9</span>
               </div>
               <span className="hidden sm:inline text-gray-500">•</span>
               <div className="flex items-center gap-2">
@@ -70,7 +70,7 @@ export default function Home() {
             </div>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
               {[
-                { icon: CalendarDays, title: "Date", desc: "Coming Soon" },
+                { icon: CalendarDays, title: "Date", desc: "Sunday, 20/9" },
                 { icon: MapPin, title: "Venue", desc: "Bangalapatti, Tamil Nadu" },
                 { icon: Trophy, title: "Prize", desc: "Exciting Cash Prizes & Trophies" },
                 { icon: Phone, title: "Contact", desc: "+91 XXXXX XXXXX" },
