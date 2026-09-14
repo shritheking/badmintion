@@ -112,7 +112,7 @@ export default function RegisterPage() {
         prefill: {
           name: formData.fullName,
           contact: "+91" + formData.mobile,
-          email: formData.email
+          email: "test.user@gmail.com"
         },
         theme: {
           color: "#3b82f6"
