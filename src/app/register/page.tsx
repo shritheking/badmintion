@@ -179,15 +179,7 @@ export default function RegisterPage() {
                   <label className="text-sm font-medium">Date of Birth *</label>
                   <input required type="date" name="dateOfBirth" value={formData.dateOfBirth} onChange={handleInputChange} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Gender *</label>
-                  <select required name="gender" value={formData.gender} onChange={handleInputChange} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-                    <option value="">Select Gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
+
                 <div className="space-y-2">
                   <label className="text-sm font-medium">City / Village *</label>
                   <input required name="city" value={formData.city} onChange={handleInputChange} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" placeholder="E.g., Bangalapatti" />
