@@ -117,21 +117,26 @@ export default function RegisterPage() {
         },
         prefill: {
           name: formData.fullName,
-          email: formData.email,
-          contact: formData.mobile
+          contact: formData.mobile,
+          email: "no-email@example.com"
         },
         theme: {
-          color: "#3b82f6" // Primary color (blue-500 equivalent)
+          color: "#3b82f6"
+        },
+        modal: {
+          ondismiss: function() {
+            setLoading(false);
+          }
         }
       };
 
       const paymentObject = new (window as any).Razorpay(options);
       
       paymentObject.on('payment.failed', function (response: any) {
-        setError(`Payment failed: ${response.error.description}`);
+        setError(response.error.description || "Payment failed");
         setLoading(false);
       });
-      
+
       paymentObject.open();
 
     } catch (err: any) {
