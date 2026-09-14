@@ -64,7 +64,7 @@ export async function POST(req: Request) {
         status: "valid",
         registration: regDetails,
         isCheckedIn,
-        checkInTime: checkInRecord?.checked_in_at
+        checkInTime: checkInRecord?.created_at
       });
     }
 
@@ -73,7 +73,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ 
           status: "already_checked_in",
           message: "Already checked in",
-          checkInTime: checkInRecord.checked_in_at,
+          checkInTime: checkInRecord.created_at,
           registration: regDetails
         });
       }
@@ -82,10 +82,7 @@ export async function POST(req: Request) {
       const { data: newCheckIn, error: checkInError } = await supabaseAdmin
         .from("check_ins")
         .insert({
-          registration_id: registration.id,
-          checked_in: true,
-          checked_in_at: new Date().toISOString(),
-          checked_in_by: userId
+          registration_id: registration.id
         })
         .select()
         .single();
@@ -104,7 +101,7 @@ export async function POST(req: Request) {
       return NextResponse.json({
         status: "success",
         message: "Checked in successfully",
-        checkInTime: newCheckIn.checked_in_at,
+        checkInTime: newCheckIn?.created_at || new Date().toISOString(),
         registration: regDetails
       });
     }
