@@ -175,7 +175,7 @@ export default function RegisterPage() {
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Mobile Number *</label>
-                  <input required type="tel" name="mobile" value={formData.mobile} onChange={handleInputChange} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" placeholder="9876543210" />
+                  <input required type="tel" name="mobile" pattern="[0-9]{10}" minLength={10} maxLength={10} title="Please enter a valid 10-digit mobile number" value={formData.mobile} onChange={handleInputChange} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" placeholder="9876543210" />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Date of Birth *</label>
@@ -193,18 +193,8 @@ export default function RegisterPage() {
               </div>
               
               <div className="space-y-2 mt-4">
-                <label className="text-sm font-medium">Address *</label>
-                <input required name="address" value={formData.address} onChange={handleInputChange} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" placeholder="House No, Street, Landmark" />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">City *</label>
-                  <input required name="city" value={formData.city} onChange={handleInputChange} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" placeholder="Chennai" />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">State *</label>
-                  <input required name="state" value={formData.state} onChange={handleInputChange} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" placeholder="Tamil Nadu" />
-                </div>
+                <label className="text-sm font-medium">City / Village *</label>
+                <input required name="city" value={formData.city} onChange={handleInputChange} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" placeholder="E.g., Bangalapatti" />
               </div>
             </section>
 
@@ -237,7 +227,7 @@ export default function RegisterPage() {
                     </div>
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Partner Mobile *</label>
-                      <input required type="tel" name="partnerMobile" value={formData.partnerMobile} onChange={handleInputChange} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+                      <input required type="tel" name="partnerMobile" pattern="[0-9]{10}" minLength={10} maxLength={10} title="Please enter a valid 10-digit mobile number" value={formData.partnerMobile} onChange={handleInputChange} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
                     </div>
                   </div>
                 </div>
