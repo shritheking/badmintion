@@ -19,7 +19,7 @@ export default function RegisterPage() {
     address: "",
     city: "",
     state: "",
-    category: "",
+    category: "Men's Doubles",
     club: "",
     partnerName: "",
     partnerMobile: "",
@@ -30,12 +30,7 @@ export default function RegisterPage() {
     agreement: false
   });
 
-  const categoryFees: Record<string, number> = {
-    "Men's Doubles": 800,
-  };
-
-  const isDoubles = formData.category.includes("Doubles");
-  const amount = formData.category ? categoryFees[formData.category] : 0;
+  const amount = 800;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -117,7 +112,7 @@ export default function RegisterPage() {
         prefill: {
           name: formData.fullName,
           contact: "+91" + formData.mobile,
-          email: "test.user@gmail.com"
+          email: formData.email
         },
         theme: {
           color: "#3b82f6"
@@ -177,6 +172,10 @@ export default function RegisterPage() {
                   <input required type="tel" name="mobile" pattern="[0-9]{10}" minLength={10} maxLength={10} title="Please enter a valid 10-digit mobile number" value={formData.mobile} onChange={handleInputChange} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" placeholder="9876543210" />
                 </div>
                 <div className="space-y-2">
+                  <label className="text-sm font-medium">Email Address *</label>
+                  <input required type="email" name="email" value={formData.email} onChange={handleInputChange} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" placeholder="rahul@example.com" />
+                </div>
+                <div className="space-y-2">
                   <label className="text-sm font-medium">Date of Birth *</label>
                   <input required type="date" name="dateOfBirth" value={formData.dateOfBirth} onChange={handleInputChange} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
                 </div>
@@ -189,11 +188,10 @@ export default function RegisterPage() {
                     <option value="Other">Other</option>
                   </select>
                 </div>
-              </div>
-              
-              <div className="space-y-2 mt-4">
-                <label className="text-sm font-medium">City / Village *</label>
-                <input required name="city" value={formData.city} onChange={handleInputChange} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" placeholder="E.g., Bangalapatti" />
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">City / Village *</label>
+                  <input required name="city" value={formData.city} onChange={handleInputChange} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" placeholder="E.g., Bangalapatti" />
+                </div>
               </div>
             </section>
 
@@ -202,13 +200,10 @@ export default function RegisterPage() {
               <h2 className="text-xl font-semibold border-b pb-2">Tournament Information</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Select Category *</label>
-                  <select required name="category" value={formData.category} onChange={handleInputChange} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-                    <option value="">Select Category</option>
-                    {Object.keys(categoryFees).map(cat => (
-                      <option key={cat} value={cat}>{cat} - ₹{categoryFees[cat]}</option>
-                    ))}
-                  </select>
+                  <label className="text-sm font-medium">Category</label>
+                  <div className="flex h-10 w-full items-center rounded-md border border-input bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700">
+                    Men's Doubles - ₹800
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Club / Organization (Optional)</label>
@@ -216,21 +211,19 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              {isDoubles && (
-                <div className="p-4 bg-slate-50 border rounded-xl space-y-4 mt-4">
-                  <h3 className="font-medium text-primary">Doubles Partner Information</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Partner Name *</label>
-                      <input required name="partnerName" value={formData.partnerName} onChange={handleInputChange} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Partner Mobile *</label>
-                      <input required type="tel" name="partnerMobile" pattern="[0-9]{10}" minLength={10} maxLength={10} title="Please enter a valid 10-digit mobile number" value={formData.partnerMobile} onChange={handleInputChange} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
-                    </div>
+              <div className="p-4 bg-slate-50 border rounded-xl space-y-4 mt-4">
+                <h3 className="font-medium text-primary">Doubles Partner Information</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Partner Name *</label>
+                    <input required name="partnerName" value={formData.partnerName} onChange={handleInputChange} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Partner Mobile *</label>
+                    <input required type="tel" name="partnerMobile" pattern="[0-9]{10}" minLength={10} maxLength={10} title="Please enter a valid 10-digit mobile number" value={formData.partnerMobile} onChange={handleInputChange} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
                   </div>
                 </div>
-              )}
+              </div>
             </section>
 
             {/* Summary & Agreement */}
@@ -255,7 +248,7 @@ export default function RegisterPage() {
 
               <button 
                 type="submit" 
-                disabled={loading || !formData.category || !formData.agreement}
+                disabled={loading || !formData.agreement}
                 className="w-full h-14 md:h-12 inline-flex items-center justify-center rounded-md bg-primary px-8 text-base font-bold text-primary-foreground shadow hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-4"
               >
                 {loading ? (
