@@ -13,7 +13,7 @@ export default function AdminDashboard() {
   const [registrations, setRegistrations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterCategory, setFilterCategory] = useState("All");
+
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -86,8 +86,7 @@ export default function AdminDashboard() {
       reg.full_name.toLowerCase().includes(searchQuery.toLowerCase()) || 
       reg.registration_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
       reg.mobile.includes(searchQuery);
-    const matchesCategory = filterCategory === "All" || reg.category === filterCategory;
-    return matchesSearch && matchesCategory;
+    return matchesSearch;
   });
 
   if (!session) return null;
@@ -162,14 +161,7 @@ export default function AdminDashboard() {
                 className="w-full pl-9 pr-4 py-2 rounded-md border text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
               />
             </div>
-            <select 
-              value={filterCategory}
-              onChange={(e) => setFilterCategory(e.target.value)}
-              className="w-full sm:w-auto px-4 py-2 rounded-md border text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
-            >
-              <option value="All">All Categories</option>
-              <option value="Men's Doubles">Men's Doubles</option>
-            </select>
+
           </div>
           <button 
             onClick={exportToExcel}
