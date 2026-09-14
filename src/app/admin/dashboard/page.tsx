@@ -28,13 +28,14 @@ export default function AdminDashboard() {
 
   const fetchRegistrations = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("registrations")
-      .select("*, check_ins(*)")
-      .order("created_at", { ascending: false });
-
-    if (!error && data) {
-      setRegistrations(data);
+    try {
+      const res = await fetch("/api/admin/registrations");
+      const json = await res.json();
+      if (json.data) {
+        setRegistrations(json.data);
+      }
+    } catch (err) {
+      console.error(err);
     }
     setLoading(false);
   };
