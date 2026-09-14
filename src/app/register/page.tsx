@@ -1,14 +1,22 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, Suspense, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Loader2 } from "lucide-react";
 
-export default function RegisterPage() {
+function RegisterForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const errorParam = searchParams.get("error");
+    if (errorParam) {
+      setError(`[PAYMENT ERROR] ${errorParam}`);
+    }
+  }, [searchParams]);
   
   const [formData, setFormData] = useState({
     fullName: "",
@@ -81,34 +89,11 @@ export default function RegisterPage() {
         amount: orderData.amount,
         currency: "INR",
         name: "SMASHPRO",
-        description: `Registration for ${formData.category}`,
+        description: `Registration`,
         image: window.location.origin + "/logo.png",
         order_id: orderData.orderId,
-        handler: async function (response: any) {
-          try {
-            setLoading(true);
-            // 4. Verify payment on our backend
-            const verifyRes = await fetch("/api/payments/verify", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-                dbId: orderData.dbId
-              })
-            });
-            
-            const verifyData = await verifyRes.json();
-            if (!verifyRes.ok) throw new Error(verifyData.error);
-            
-            // 5. Redirect to confirmation
-            router.push(`/confirmation/${verifyData.registrationId}`);
-          } catch (err: any) {
-            setError(err.message || "Payment verification failed. Please contact support.");
-            setLoading(false);
-          }
-        },
+        callback_url: window.location.origin + "/api/payments/callback",
+        redirect: true,
         prefill: {
           name: formData.fullName,
           contact: "+91" + formData.mobile,
@@ -254,5 +239,13 @@ export default function RegisterPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center"><Loader2 className="animate-spin h-8 w-8 text-primary" /></div>}>
+      <RegisterForm />
+    </Suspense>
   );
 }
