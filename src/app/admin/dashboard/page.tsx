@@ -135,7 +135,7 @@ export default function AdminDashboard() {
       "Razorpay Order ID": reg.razorpay_order_id || "N/A",
       "Razorpay Payment ID": reg.razorpay_payment_id || "N/A",
       "Check-in Status": reg.check_ins && reg.check_ins.length > 0 ? "Present" : "Not Present",
-      "Check-in Time": reg.check_ins && reg.check_ins.length > 0 ? new Date(reg.check_ins[0].checked_in_at).toLocaleString() : "N/A",
+      "Check-in Time": reg.check_ins && reg.check_ins.length > 0 ? new Date(reg.check_ins[0].created_at).toLocaleString() : "N/A",
       "Registration Date": new Date(reg.created_at).toLocaleString(),
       "DOB": reg.date_of_birth,
       "Gender": reg.gender,
@@ -326,7 +326,7 @@ export default function AdminDashboard() {
                           <span className="text-slate-600 font-medium">{reg.category}</span>
                           {isCheckedIn && (
                             <span className="text-xs text-slate-500">
-                              {new Date(reg.check_ins[0].checked_in_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                              {new Date(reg.check_ins[0].created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                             </span>
                           )}
                         </div>
@@ -412,7 +412,7 @@ export default function AdminDashboard() {
                                 )}
                               </td>
                               <td className="px-6 py-4 text-slate-500">
-                                {isCheckedIn ? new Date(reg.check_ins[0].checked_in_at).toLocaleTimeString() : '-'}
+                                {isCheckedIn ? new Date(reg.check_ins[0].created_at).toLocaleTimeString() : '-'}
                               </td>
                             </>
                           )}
