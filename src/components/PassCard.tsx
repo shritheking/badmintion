@@ -89,15 +89,15 @@ export default function PassCard({ registration }: { registration: any }) {
             <p className="text-sm font-semibold text-primary">{registration.category}</p>
           </div>
           
-          <div style={{ textAlign: "center", fontSize: "12px", fontWeight: "600", color: "#64748b", marginBottom: "12px", marginTop: "4px" }}>
-            <span style={{ display: "inline-block", marginRight: "16px" }}>
+          <div style={{ textAlign: "center", fontSize: "11px", fontWeight: "600", color: "#64748b", marginBottom: "12px", marginTop: "4px" }}>
+            <div style={{ marginBottom: "4px" }}>
               <CalendarDays style={{ display: "inline-block", verticalAlign: "middle", width: "12px", height: "12px", marginRight: "4px" }} />
-              <span style={{ display: "inline-block", verticalAlign: "middle" }}>Sept 20th</span>
-            </span>
-            <span style={{ display: "inline-block" }}>
+              <span style={{ display: "inline-block", verticalAlign: "middle" }}>Sunday, September 20th</span>
+            </div>
+            <div>
               <MapPin style={{ display: "inline-block", verticalAlign: "middle", width: "12px", height: "12px", marginRight: "4px" }} />
-              <span style={{ display: "inline-block", verticalAlign: "middle" }}>Vattalagundu Venue</span>
-            </span>
+              <span style={{ display: "inline-block", verticalAlign: "middle" }}>Learn Fort Badminton Court, Bangalapatti, Vattalagundu</span>
+            </div>
           </div>
           
           <div className="inline-block bg-slate-100 rounded-md px-3 py-1 font-mono text-xs font-bold text-slate-600 mb-3 border border-slate-200">
