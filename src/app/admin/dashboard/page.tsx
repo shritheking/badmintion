@@ -89,6 +89,12 @@ export default function AdminDashboard() {
     return matchesSearch;
   });
 
+  const [activeTab, setActiveTab] = useState("payments");
+
+  // Filter registrations for tabs
+  const paymentsData = filteredRegistrations;
+  const checkinsData = filteredRegistrations.filter(r => r.payment_status === "PAID");
+
   if (!session) return null;
 
   return (
@@ -161,7 +167,6 @@ export default function AdminDashboard() {
                 className="w-full pl-9 pr-4 py-2 rounded-md border text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
               />
             </div>
-
           </div>
           <button 
             onClick={exportToExcel}
@@ -171,17 +176,33 @@ export default function AdminDashboard() {
           </button>
         </div>
 
+        {/* Tabs */}
+        <div className="flex border-b bg-white px-4 pt-4 rounded-t-xl shadow-sm border-x border-t">
+          <button 
+            onClick={() => setActiveTab('payments')}
+            className={`px-6 py-3 font-semibold text-sm border-b-2 transition-colors ${activeTab === 'payments' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+          >
+            Payment History
+          </button>
+          <button 
+            onClick={() => setActiveTab('checkins')}
+            className={`px-6 py-3 font-semibold text-sm border-b-2 transition-colors ${activeTab === 'checkins' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+          >
+            Check-in Status
+          </button>
+        </div>
+
         {/* Data View */}
         <div className="space-y-4">
           {loading ? (
-            <div className="p-12 text-center text-slate-500 bg-white rounded-xl border">Loading registrations...</div>
-          ) : filteredRegistrations.length === 0 ? (
-            <div className="p-12 text-center text-slate-500 bg-white rounded-xl border">No registrations found</div>
+            <div className="p-12 text-center text-slate-500 bg-white rounded-b-xl border-x border-b">Loading...</div>
+          ) : (activeTab === 'payments' ? paymentsData : checkinsData).length === 0 ? (
+            <div className="p-12 text-center text-slate-500 bg-white rounded-b-xl border-x border-b">No records found</div>
           ) : (
             <>
               {/* MOBILE VIEW: Stacked Cards */}
               <div className="grid grid-cols-1 gap-4 md:hidden">
-                {filteredRegistrations.map((reg) => {
+                {(activeTab === 'payments' ? paymentsData : checkinsData).map((reg) => {
                   const isCheckedIn = reg.check_ins && reg.check_ins.length > 0;
                   return (
                     <div key={reg.id} className="bg-white border rounded-xl p-4 shadow-sm space-y-3 relative overflow-hidden">
@@ -191,77 +212,110 @@ export default function AdminDashboard() {
                           <p className="font-bold text-slate-900 text-lg mt-0.5">{reg.full_name}</p>
                           <p className="text-sm text-slate-500">{reg.mobile}</p>
                         </div>
-                        <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-bold ${
-                          reg.payment_status === 'PAID' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
-                        }`}>
-                          {reg.payment_status}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center text-sm">
-                        <span className="text-slate-600 font-medium">{reg.category}</span>
-                        {isCheckedIn ? (
-                          <span className="flex items-center text-green-600 font-bold">
-                            <CheckCircle2 className="h-4 w-4 mr-1" /> PRESENT
+                        {activeTab === 'payments' ? (
+                          <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-bold ${
+                            reg.payment_status === 'PAID' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                          }`}>
+                            {reg.payment_status}
                           </span>
                         ) : (
-                          <span className="flex items-center text-slate-400">
-                            <XCircle className="h-4 w-4 mr-1" /> Pending
-                          </span>
+                          isCheckedIn ? (
+                            <span className="flex items-center px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">
+                              <CheckCircle2 className="h-3 w-3 mr-1" /> PRESENT
+                            </span>
+                          ) : (
+                            <span className="flex items-center px-2 py-1 bg-slate-100 text-slate-500 rounded-full text-xs font-bold">
+                              <XCircle className="h-3 w-3 mr-1" /> PENDING
+                            </span>
+                          )
                         )}
                       </div>
-                      <div className="text-xs text-slate-400 text-right pt-2">
-                        {new Date(reg.created_at).toLocaleDateString()}
-                      </div>
+                      
+                      {activeTab === 'payments' ? (
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="text-slate-600 font-medium">Amount: ₹{reg.amount}</span>
+                          <span className="text-xs text-slate-400">{new Date(reg.created_at).toLocaleDateString()}</span>
+                        </div>
+                      ) : (
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="text-slate-600 font-medium">{reg.category}</span>
+                          {isCheckedIn && (
+                            <span className="text-xs text-slate-500">
+                              {new Date(reg.check_ins[0].checked_in_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   );
                 })}
               </div>
 
               {/* DESKTOP VIEW: Data Table */}
-              <div className="hidden md:block bg-white border rounded-xl shadow-sm overflow-hidden overflow-x-auto">
+              <div className="hidden md:block bg-white border rounded-b-xl shadow-sm overflow-hidden overflow-x-auto">
                 <table className="w-full text-sm text-left whitespace-nowrap">
                   <thead className="bg-slate-50 text-slate-600 font-medium border-b">
                     <tr>
-                      <th className="px-4 py-3">ID</th>
-                      <th className="px-4 py-3">Player</th>
-                      <th className="px-4 py-3">Category</th>
-                      <th className="px-4 py-3">Status</th>
-                      <th className="px-4 py-3">Check-in</th>
-                      <th className="px-4 py-3">Date</th>
+                      <th className="px-6 py-4">Registration ID</th>
+                      <th className="px-6 py-4">Player</th>
+                      {activeTab === 'payments' ? (
+                        <>
+                          <th className="px-6 py-4">Amount</th>
+                          <th className="px-6 py-4">Payment Status</th>
+                          <th className="px-6 py-4">Date</th>
+                        </>
+                      ) : (
+                        <>
+                          <th className="px-6 py-4">Category</th>
+                          <th className="px-6 py-4">Check-in Status</th>
+                          <th className="px-6 py-4">Time</th>
+                        </>
+                      )}
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    {filteredRegistrations.map((reg) => {
+                    {(activeTab === 'payments' ? paymentsData : checkinsData).map((reg) => {
                       const isCheckedIn = reg.check_ins && reg.check_ins.length > 0;
                       return (
                         <tr key={reg.id} className="hover:bg-slate-50">
-                          <td className="px-4 py-3 font-mono font-medium text-slate-900">{reg.registration_id}</td>
-                          <td className="px-4 py-3">
+                          <td className="px-6 py-4 font-mono font-medium text-slate-900">{reg.registration_id}</td>
+                          <td className="px-6 py-4">
                             <p className="font-semibold text-slate-900">{reg.full_name}</p>
                             <p className="text-xs text-slate-500">{reg.mobile}</p>
                           </td>
-                          <td className="px-4 py-3">{reg.category}</td>
-                          <td className="px-4 py-3">
-                            <span className={`inline-flex px-2 py-1 rounded-full text-xs font-semibold ${
-                              reg.payment_status === 'PAID' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
-                            }`}>
-                              {reg.payment_status}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3">
-                            {isCheckedIn ? (
-                              <span className="flex items-center text-green-600 text-xs font-bold">
-                                <CheckCircle2 className="h-3 w-3 mr-1" /> PRESENT
-                              </span>
-                            ) : (
-                              <span className="flex items-center text-slate-400 text-xs">
-                                <XCircle className="h-3 w-3 mr-1" /> Pending
-                              </span>
-                            )}
-                          </td>
-                          <td className="px-4 py-3 text-slate-500">
-                            {new Date(reg.created_at).toLocaleDateString()}
-                          </td>
+                          {activeTab === 'payments' ? (
+                            <>
+                              <td className="px-6 py-4 font-medium">₹{reg.amount}</td>
+                              <td className="px-6 py-4">
+                                <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-bold ${
+                                  reg.payment_status === 'PAID' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                                }`}>
+                                  {reg.payment_status}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 text-slate-500">
+                                {new Date(reg.created_at).toLocaleDateString()}
+                              </td>
+                            </>
+                          ) : (
+                            <>
+                              <td className="px-6 py-4">{reg.category}</td>
+                              <td className="px-6 py-4">
+                                {isCheckedIn ? (
+                                  <span className="flex items-center text-green-600 text-xs font-bold">
+                                    <CheckCircle2 className="h-4 w-4 mr-1.5" /> PRESENT
+                                  </span>
+                                ) : (
+                                  <span className="flex items-center text-slate-400 text-xs font-bold">
+                                    <XCircle className="h-4 w-4 mr-1.5" /> PENDING
+                                  </span>
+                                )}
+                              </td>
+                              <td className="px-6 py-4 text-slate-500">
+                                {isCheckedIn ? new Date(reg.check_ins[0].checked_in_at).toLocaleTimeString() : '-'}
+                              </td>
+                            </>
+                          )}
                         </tr>
                       )
                     })}
