@@ -53,7 +53,12 @@ export async function POST(req: Request) {
       .select('id')
       .single();
 
-    if (dbError) throw new Error(dbError.message);
+    if (dbError) {
+      if (dbError.code === '23505') { // Unique violation
+        throw new Error("This mobile number or email is already registered.");
+      }
+      throw new Error(dbError.message);
+    }
 
     // Return the order to frontend to open checkout
     return NextResponse.json({ 
