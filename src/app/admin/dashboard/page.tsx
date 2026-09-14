@@ -168,11 +168,7 @@ export default function AdminDashboard() {
               className="w-full sm:w-auto px-4 py-2 rounded-md border text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
             >
               <option value="All">All Categories</option>
-              <option value="Men's Singles">Men's Singles</option>
-              <option value="Women's Singles">Women's Singles</option>
               <option value="Men's Doubles">Men's Doubles</option>
-              <option value="Women's Doubles">Women's Doubles</option>
-              <option value="Mixed Doubles">Mixed Doubles</option>
             </select>
           </div>
           <button 
