@@ -183,7 +183,7 @@ export default function AdminScanner() {
 
       <main className="flex-1 flex flex-col items-center justify-start p-4 sm:p-6 w-full max-w-lg mx-auto gap-4">
         
-        <div className="w-full bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-slate-800 relative flex flex-col aspect-square sm:aspect-auto sm:min-h-[450px]">
+        <div className="w-full bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-slate-800 relative flex flex-col aspect-[3/4] sm:aspect-auto sm:min-h-[450px]">
           
           {/* CAMERA VIEWPORT */}
           <div className="flex-1 relative bg-black flex flex-col w-full h-full">
@@ -271,7 +271,7 @@ export default function AdminScanner() {
 
             {/* RESULTS OVERLAY - Opaque layer covering camera feed while keeping camera running behind */}
             {scanResult && (
-              <div className="absolute inset-0 z-30 bg-slate-900 flex flex-col p-6 animate-in fade-in zoom-in-95 duration-200">
+              <div className="absolute inset-0 z-30 bg-slate-900 flex flex-col p-6 animate-in fade-in zoom-in-95 duration-200 overflow-y-auto">
                 <div className="flex-1 flex flex-col justify-center">
                   {scanResult.status === "success" && (
                     <div className="w-full space-y-5 text-center">
@@ -308,7 +308,11 @@ export default function AdminScanner() {
                       </div>
                       <div>
                         <h2 className="text-2xl font-bold text-white mb-1">Already Checked In</h2>
-                        <p className="text-sm font-medium text-yellow-500">Checked in at {new Date(scanResult.checkInTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                        {scanResult.checkInTime ? (
+                          <p className="text-sm font-medium text-yellow-500">Checked in at {new Date(scanResult.checkInTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                        ) : (
+                          <p className="text-sm font-medium text-yellow-500">Previously Checked In</p>
+                        )}
                       </div>
                       {scanResult.registration && (
                         <div className="bg-slate-800 p-5 rounded-2xl border border-slate-700 space-y-3 text-left">
