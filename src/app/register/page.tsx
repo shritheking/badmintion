@@ -31,7 +31,6 @@ export default function RegisterPage() {
   });
 
   const categoryFees: Record<string, number> = {
-    "Men's Singles": 500,
     "Men's Doubles": 800,
   };
 
