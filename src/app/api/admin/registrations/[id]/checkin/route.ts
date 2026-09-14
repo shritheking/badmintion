@@ -20,8 +20,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     const { error: checkinError } = await supabaseAdmin
       .from("check_ins")
       .insert({
-        registration_id: id,
-        scanned_by: "Manual Admin"
+        registration_id: id
       });
       
     if (checkinError) {
