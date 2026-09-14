@@ -262,7 +262,7 @@ export default function RegisterPage() {
               <button 
                 type="submit" 
                 disabled={loading || !formData.category || !formData.agreement}
-                className="w-full h-14 md:h-12 inline-flex items-center justify-center rounded-md bg-primary px-8 text-base font-bold text-primary-foreground shadow hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed sticky bottom-4 z-10 md:static"
+                className="w-full h-14 md:h-12 inline-flex items-center justify-center rounded-md bg-primary px-8 text-base font-bold text-primary-foreground shadow hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-4"
               >
                 {loading ? (
                   <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Processing Payment...</>
